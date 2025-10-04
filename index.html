@@ -527,7 +527,7 @@
   <nav role="navigation" aria-label="Main navigation">
     <div class="brand" style="gap:12px;">
       <div class="logo" aria-hidden="true">
-        <img src="images.zip/4AFDF179-164A-45F3-A9FC-0101C4F2027B.jpeg.jpeg" alt="Samantha logo thumbnail">
+        <img src="4AFDF179-164A-45F3-A9FC-0101C4F2027B.jpeg" alt="Samantha logo thumbnail">
       </div>
       <h4>Samantha</h4>
     </div>
@@ -880,7 +880,7 @@
             <input class="input" placeholder="Your email">
             <textarea class="input" rows="5" placeholder="Message"></textarea>
             <div style="display:flex; gap:8px;">
-              <button class="btn" onclick="alert('Demo only — replace with real backend or form handler')">Send (Demo)</button>
+              <button class="btn" onclick="sendDemo(this)">Send (Demo)</button>
               <button class="btn ghost" onclick="copyEmail()">Contact via Email</button>
             </div>
           </div>
@@ -1024,7 +1024,7 @@
         // fallback
         const ta = document.createElement('textarea');
         ta.value = email; document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); alert('Email copied') } catch(e){ alert('Copy failed') }
+        try { document.execCommand('copy'); const btn = document.getElementById('copyEmailBtn'); if(btn) { btn.textContent = 'Copied!'; setTimeout(()=> btn.textContent = 'Copy Email', 1400);} } catch(e){ alert('Copy failed') }
         document.body.removeChild(ta);
         return;
       }
@@ -1036,67 +1036,82 @@
     }
 
     /* -------------------------
-       Download CV (demo)
+       Download CV (improved)
+       - Tries to download `Samantha_CV.pdf` from the site root if present.
+       - If not present or fetch fails, falls back to creating a small text CV and downloading it.
+       Notes: to enable a real PDF download on GitHub Pages, upload a file named `Samantha_CV.pdf` to the repo root (same folder as this HTML).
        ------------------------- */
     function downloadCV(){
-      // Simple demo: dynamically create a small CV text file and trigger download.
-      const cvText = `
-Samantha — Computer Science & Engineering student
-Email: ramishasamanthaa@gmail.com
-LinkedIn: https://www.linkedin.com/in/ramisha-hossain-samantha-01945b386
+      const pdfPath = 'Samantha_CV.pdf'; // <-- put a real PDF at this path to serve the proper CV
 
-About:
-Hi there! I'm Samantha, a CSE student at BRAC University...
-(Full CV — replace with real CV.pdf in your repo to serve as a download file.)
-      `.trim();
-      const blob = new Blob([cvText], {type: 'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'Samantha_CV.txt'; document.body.appendChild(a); a.click();
-      a.remove(); URL.revokeObjectURL(url);
+      function fallbackTextDownload(){
+        const cvText = `Samantha — Computer Science & Engineering student\nEmail: ramishasamanthaa@gmail.com\nLinkedIn: https://www.linkedin.com/in/ramisha-hossain-samantha-01945b386\n\nAbout:\nHi there! I'm Samantha, a CSE student at BRAC University...\n(Replace this with your full CV.pdf in the repo root to enable PDF download.)`;
+        const blob = new Blob([cvText], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'Samantha_CV.txt';
+        // append to DOM for maximum browser compatibility
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        // revoke after a small delay
+        setTimeout(()=> URL.revokeObjectURL(url), 1500);
+      }
+
+      // First attempt a HEAD request to see if the PDF exists (same-origin).
+      // Some static hosts may not support HEAD; if HEAD fails we'll fallback.
+      try{
+        fetch(pdfPath, { method: 'HEAD' }).then(res => {
+          if(res && res.ok){
+            // PDF exists — trigger download via anchor
+            const a = document.createElement('a');
+            a.href = pdfPath;
+            a.download = 'Samantha_CV.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          } else {
+            // fallback to text CV
+            fallbackTextDownload();
+          }
+        }).catch(()=>{
+          // network error or HEAD not allowed — try a direct GET trick (open in new tab)
+          // Some browsers will open the PDF in a new tab; users can then save it.
+          // To avoid silently failing, we fallback to the text CV.
+          fallbackTextDownload();
+        });
+      } catch(e){
+        fallbackTextDownload();
+      }
     }
 
     /* -------------------------
-       Accessibility small helpers
+       Send (Demo) handler — keeps existing UI and only provides a friendly demo response.
+       Called as: onclick="sendDemo(this)"
        ------------------------- */
-    (function keyboardNavFix(){
-      // Make nav links focus-visible friendly
-      const links = document.querySelectorAll('nav a');
-      links.forEach(l => l.addEventListener('focus', () => l.style.outline = '2px solid rgba(255,0,127,0.12)'));
-      links.forEach(l => l.addEventListener('blur', () => l.style.outline = 'none'));
-    })();
+    function sendDemo(btn){
+      try{
+        // nice UX: briefly disable the button and show 'Sent (Demo)'
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Sent (Demo)';
+        setTimeout(()=>{ btn.disabled = false; btn.textContent = original; }, 1400);
 
-    /* -------------------------
-       Extra: animate progress bars when skills section visible
-       ------------------------- */
-    (function animateProgress(){
-      const skillsSection = document.getElementById('skills');
-      const progressEls = document.querySelectorAll('.progress > i');
-      const obs = new IntersectionObserver((entries)=>{
-        entries.forEach(entry=>{
-          if(entry.isIntersecting){
-            progressEls.forEach(el => {
-              // each already has inline width set in HTML (so they animate to that value)
-              el.style.width = el.style.width || '70%';
-            });
-            obs.disconnect();
-          }
-        });
-      }, {threshold:0.2});
-      if(skillsSection) obs.observe(skillsSection);
-    })();
+        // optional: read the inputs in the same contact card (for demo logging)
+        const card = btn.closest('.contact-card');
+        if(card){
+          const name = card.querySelector('input[placeholder="Your name"]')?.value || '';
+          const email = card.querySelector('input[placeholder="Your email"]')?.value || '';
+          const message = card.querySelector('textarea')?.value || '';
+          // don't send anywhere (demo only) — but log to console for convenience
+          console.info('Demo form capture (not sent):', {name, email, message});
+        }
 
-    /* -------------------------
-       Prevent focus outline on mouse click
-       ------------------------- */
-    (function needle(){
-      function handleMouseDown(){ document.body.classList.add('using-mouse') }
-      function handleKeyDown(e){ if(e.key === 'Tab') document.body.classList.remove('using-mouse') }
-      document.addEventListener('mousedown', handleMouseDown);
-      document.addEventListener('keydown', handleKeyDown);
-    })();
+        // show a single alert so the user understands it's a demo
+        alert('Demo only — form is not connected to a backend. Your message was NOT sent.');
+      } catch(e){
+        alert('Demo — action completed.');
+      }
+    }
 
-    /* End of JS */
-  </script>
-</body>
-</html>
+    /

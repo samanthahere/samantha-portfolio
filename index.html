@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Samantha — Portfolio</title>
+
+  <!--
+    Samantha's Single-file Portfolio
+    - Full black / neon pink theme
+    - All-in-one HTML + CSS + JS (copy-paste to GitHub Pages)
+    - Profile image and gallery images are already wired to your filenames
+    - Features: smooth scroll, typing tagline, fade-in reveals, timeline, lightbox, back-to-top, copy-email
+  -->
+
+  <style>
+    /* ===================================================================
+       CSS VARIABLES & RESET
+       =================================================================== */
+    :root{
+      --bg: #000000;
+      --panel: #0f0f11;
+      --neon: #ff007f; /* neon pink main accent */
+      --muted: #bdbdbd;
+      --glass: rgba(255,0,127,0.06);
+      --glow: 0 0 18px rgba(255,0,127,0.18), 0 0 40px rgba(255,0,127,0.08);
+      --radius: 12px;
+      --max-width: 1100px;
+      --mono: "Fira Mono", monospace;
+      --ui: 14px;
+    }
+
+    /* Basic reset */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:#eee;
+      font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+      letter-spacing:0.2px;
+      scroll-behavior: smooth;
+    }
+
+    a{color:var(--neon); text-decoration:none}
+    a:hover{filter:brightness(1.05); text-shadow:0 0 12px var(--neon)}
+    img { display:block; max-width:100%; height:auto; }
+
+    /* ===================================================================
+       LAYOUT: NAVBAR
+       =================================================================== */
+    nav {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(96%, 960px);
+      z-index: 1200;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:10px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border-radius: 14px;
+      border: 1px solid rgba(255,0,127,0.08);
+      box-shadow: var(--glow);
+      backdrop-filter: blur(6px) saturate(120%);
+    }
+
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .brand .logo {
+      width:44px; height:44px;
+      border-radius:50%;
+      overflow:hidden;
+      border: 2px solid rgba(255,0,127,0.16);
+      box-shadow:0 0 10px rgba(255,0,127,0.12);
+    }
+
+    .brand h4 {
+      margin:0;
+      color:var(--neon);
+      font-size:1rem;
+      text-shadow:0 0 8px rgba(255,0,127,0.18);
+      letter-spacing:0.6px;
+    }
+
+    /* nav links */
+    .nav-links{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-left:auto;
+    }
+
+    .nav-links a{
+      padding:8px 12px;
+      border-radius: 8px;
+      font-weight:600;
+      font-size:var(--ui);
+      color:var(--neon);
+      border:1px solid transparent;
+      transition: all .22s ease;
+    }
+
+    .nav-links a:hover{
+      background: linear-gradient(90deg, rgba(255,0,127,0.06), rgba(255,0,127,0.02));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255,0,127,0.06);
+      border: 1px solid rgba(255,0,127,0.12);
+    }
+
+    /* small screens collapse nav links into dots */
+    @media (max-width:720px){
+      .nav-links a{font-size:13px; padding:7px 9px}
+    }
+
+    /* ===================================================================
+       PAGE WRAPPER & SECTION BASE
+       =================================================================== */
+    .page {
+      width:100%;
+      display:flex;
+      justify-content:center;
+      padding-top:84px; /* leave room for navbar */
+    }
+
+    .container {
+      width:100%;
+      max-width: var(--max-width);
+      padding: 28px;
+    }
+
+    section {
+      min-height: calc(100vh - 120px);
+      padding: 48px 20px;
+      margin: 24px 0;
+      display:block;
+      position:relative;
+      opacity:0;
+      transform: translateY(40px);
+      transition: opacity .9s ease, transform .9s ease;
+    }
+    section.visible {
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    /* Headings */
+    h1,h2,h3{
+      color:var(--neon);
+      margin: 0 0 16px 0;
+      text-shadow: 0 0 16px rgba(255,0,127,0.14);
+    }
+
+    /* subtle divider */
+    .divider{
+      height:1px; width:100%; background: linear-gradient(90deg, transparent, rgba(255,0,127,0.06), transparent);
+      margin:18px 0 26px 0;
+    }
+
+    /* ===================================================================
+       HOME / HERO
+       =================================================================== */
+    #home {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:28px;
+      padding-top:36px;
+    }
+
+    .hero {
+      display:flex;
+      align-items:center;
+      gap:28px;
+      width:100%;
+    }
+
+    .hero-left {
+      width:310px;
+      min-width:220px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      padding:18px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,0,127,0.02), rgba(255,0,127,0.01));
+      border: 1px solid rgba(255,0,127,0.06);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+
+    /* circular profile */
+    .profile-wrap {
+      width:190px; height:190px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border:4px solid var(--neon);
+      box-shadow: 0 0 28px rgba(255,0,127,0.16);
+      transform: translateY(-6px);
+    }
+
+    .profile-wrap img { width:100%; height:100%; object-fit:cover }
+
+    .name {
+      margin-top:12px;
+      font-size:1.6rem;
+      font-weight:700;
+      color:var(--neon);
+    }
+
+    .tagline {
+      font-size:0.98rem;
+      color:var(--muted);
+      margin-top:8px;
+      max-width:240px;
+    }
+
+    .cta-row {
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      align-items:center;
+    }
+
+    .btn {
+      background:linear-gradient(90deg, rgba(255,0,127,0.12), rgba(255,0,127,0.06));
+      border: 1px solid rgba(255,0,127,0.14);
+      color:var(--neon);
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+      transition:all .18s ease;
+      box-shadow: 0 6px 24px rgba(255,0,127,0.04);
+    }
+    .btn:hover{ transform: translateY(-4px); box-shadow: 0 18px 60px rgba(255,0,127,0.08) }
+
+    .btn.ghost{
+      background:transparent;
+      border:1px dashed rgba(255,0,127,0.08);
+      color: #fff;
+      font-weight:600;
+    }
+
+    /* typing headline on the right */
+    .hero-right {
+      flex:1;
+      padding:18px 28px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:12px;
+      text-align:left;
+    }
+
+    .hero-right .bigline {
+      font-size:2.2rem;
+      line-height:1.05;
+      font-weight:800;
+      letter-spacing:-0.6px;
+    }
+
+    .typing {
+      color:#fff;
+      font-weight:700;
+      font-family: var(--mono);
+      display:inline-block;
+      border-right: 2px solid rgba(255,255,255,0.06);
+      padding-right:6px;
+      animation: blink-caret 1s step-end infinite;
+    }
+    @keyframes blink-caret{
+      50%{ border-color: transparent }
+    }
+
+    .subtext{
+      color:var(--muted);
+      margin-top:8px;
+      max-width:65%;
+      font-size:1rem;
+    }
+
+    /* ===================================================================
+       SKILLS (grid with icons, progress bars)
+       =================================================================== */
+    .skills-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .skill-card {
+      background: linear-gradient(180deg, rgba(255,0,127,0.02), rgba(255,0,127,0.01));
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,0,127,0.06);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .skill-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(255,0,127,0.05) }
+
+    .skill-icon{
+      width:52px; height:52px; border-radius:12px; display:grid; place-items:center;
+      background: rgba(255,255,255,0.02); border:1px solid rgba(255,0,127,0.06);
+      font-size:18px; color:var(--neon);
+    }
+
+    .skill-body { flex:1; }
+    .skill-body h4{ margin:0; font-size:1rem; color:var(--neon) }
+    .skill-body p{ margin:6px 0 0 0; font-size:0.86rem; color:var(--muted) }
+
+    .progress {
+      height:8px; background: rgba(255,255,255,0.03); border-radius:8px; overflow:hidden; margin-top:8px;
+      border:1px solid rgba(255,0,127,0.04);
+    }
+    .progress > i {
+      display:block; height:100%; background: linear-gradient(90deg, var(--neon), rgba(255,0,127,0.6));
+      width:0%;
+      box-shadow: 0 6px 16px rgba(255,0,127,0.08);
+      transition: width 1.1s cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* ===================================================================
+       PROJECTS (cards with description + tags + links)
+       =================================================================== */
+    .projects-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .project-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:16px;
+      border-radius:14px;
+      border: 1px solid rgba(255,0,127,0.06);
+      position:relative;
+      overflow:hidden;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .project-card:hover { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(255,0,127,0.06) }
+
+    .project-title {
+      font-weight:700; color:var(--neon); font-size:1.02rem; margin-bottom:6px;
+    }
+    .project-desc { color:var(--muted); font-size:0.92rem; margin-bottom:10px }
+    .project-links { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px }
+
+    .tag {
+      padding:6px 8px; border-radius:8px; font-size:12px; color:#fff; background: rgba(255,0,127,0.12);
+      border: 1px solid rgba(255,0,127,0.06);
+    }
+
+    .link-btn {
+      padding:8px 10px; border-radius:10px; background:transparent; border:1px solid rgba(255,0,127,0.12);
+      color:var(--neon); font-weight:700; font-size:13px; text-decoration:none;
+    }
+
+    /* ===================================================================
+       TIMELINE (education & experience)
+       =================================================================== */
+    .timeline {
+      margin-top:12px;
+      display:grid;
+      gap:18px;
+    }
+
+    .timeline-item {
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(255,0,127,0.06);
+    }
+
+    .timeline-bullet {
+      width:14px; height:14px; border-radius:50%;
+      background:var(--neon);
+      margin-top:8px;
+      box-shadow: 0 0 16px rgba(255,0,127,0.14);
+    }
+
+    .timeline-body h4{ margin:0; color:var(--neon); font-weight:700 }
+    .timeline-body p{ margin:6px 0 0 0; color:var(--muted) }
+
+    /* ===================================================================
+       PHOTOGRAPHY GALLERY
+       =================================================================== */
+    .gallery-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap:16px;
+      margin-top:18px;
+    }
+
+    .photo-card{
+      position:relative;
+      border-radius:12px;
+      overflow:hidden;
+      border:3px solid rgba(255,0,127,0.06);
+      transition: transform .25s ease, box-shadow .25s ease;
+      cursor:pointer;
+    }
+
+    .photo-card img{ display:block; width:100%; height:100%; object-fit:cover; transform:scale(1.02); transition: transform .55s cubic-bezier(.2,.9,.2,1) }
+    .photo-card:hover { transform: translateY(-8px); box-shadow: 0 28px 70px rgba(255,0,127,0.06) }
+    .photo-card:hover img{ transform: scale(1.06) }
+
+    .photo-caption {
+      position:absolute;
+      bottom:10px; left:10px; right:10px;
+      color:#fff; font-weight:700; font-size:14px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      display:flex; justify-content:space-between; gap:8px; align-items:center;
+    }
+
+    /* lightbox overlay (hidden by default) */
+    .lightbox {
+      position:fixed; inset:0; display:none; place-items:center; z-index:2400;
+      background: linear-gradient(180deg, rgba(0,0,0,0.86), rgba(0,0,0,0.96));
+      padding:32px;
+    }
+
+    .lightbox.open { display:grid }
+    .lightbox-img {
+      max-width:1100px; max-height:85vh; border-radius:10px; overflow:hidden; box-shadow: 0 40px 120px rgba(0,0,0,0.8);
+      border:6px solid rgba(255,0,127,0.06);
+    }
+
+    .lightbox-close {
+      position:absolute; top:28px; right:28px; background:transparent; border:1px solid rgba(255,255,255,0.06);
+      color:var(--neon); padding:8px 10px; border-radius:8px; cursor:pointer;
+    }
+
+    /* ===================================================================
+       CONTACT
+       =================================================================== */
+    .contact-grid {
+      display:grid; gap:12px; margin-top:10px;
+      grid-template-columns: 1fr 320px;
+    }
+    @media (max-width:920px){ .contact-grid { grid-template-columns: 1fr } }
+
+    .contact-card{
+      padding:14px; border-radius:12px; border:1px solid rgba(255,0,127,0.06);
+      background: linear-gradient(180deg, rgba(255,0,127,0.02), rgba(255,0,127,0.01));
+    }
+
+    .input {
+      background: rgba(255,255,255,0.02); border:1px solid rgba(255,0,127,0.04);
+      padding:10px 12px; border-radius:8px; color:#fff; width:100%; margin-top:8px;
+    }
+
+    .copy-row{ display:flex; gap:8px; align-items:center; margin-top:8px }
+    .copy-row .small {
+      color:var(--muted); font-size:13px;
+    }
+
+    /* ===================================================================
+       BACK TO TOP (floating neon button)
+       =================================================================== */
+    .back-top {
+      position:fixed; right:18px; bottom:18px; z-index:2300;
+      width:56px; height:56px; border-radius:50%;
+      display:grid; place-items:center;
+      background: linear-gradient(180deg, rgba(255,0,127,0.18), rgba(255,0,127,0.12));
+      border: 1px solid rgba(255,0,127,0.14);
+      box-shadow: 0 20px 60px rgba(255,0,127,0.06);
+      cursor:pointer; transform: translateY(8px); transition: all .22s ease;
+    }
+    .back-top:hover { transform: translateY(-4px); box-shadow: 0 28px 70px rgba(255,0,127,0.08) }
+
+    /* ===================================================================
+       FOOTER
+       =================================================================== */
+    footer {
+      margin-top:40px;
+      padding:22px 10px;
+      text-align:center;
+      color: #999;
+      border-top: 1px solid rgba(255,0,127,0.04);
+      font-size:13px;
+    }
+
+    /* ===================================================================
+       RESPONSIVE ADJUSTMENTS
+       =================================================================== */
+    @media (max-width:960px){
+      .hero-right .bigline { font-size:1.6rem }
+      .hero { flex-direction:column; gap:18px; align-items:center }
+    }
+
+    @media (max-width:520px){
+      .profile-wrap { width:150px; height:150px }
+      .hero-right .bigline { font-size:1.3rem }
+    }
+
+    /* ===================================================================
+       COMMENTS (end of CSS)
+       =================================================================== */
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav role="navigation" aria-label="Main navigation">
+    <div class="brand" style="gap:12px;">
+      <div class="logo" aria-hidden="true">
+        <img src="4AFDF179-164A-45F3-A9FC-0101C4F2027B.jpeg" alt="Samantha logo thumbnail">
+      </div>
+      <h4>Samantha</h4>
+    </div>
+
+    <div class="nav-links" role="menubar" aria-hidden="false">
+      <a href="#home" role="menuitem">Home</a>
+      <a href="#about" role="menuitem">About</a>
+      <a href="#skills" role="menuitem">Skills</a>
+      <a href="#projects" role="menuitem">Projects</a>
+      <a href="#education" role="menuitem">Education</a>
+      <a href="#photography" role="menuitem">Photography</a>
+      <a href="#contact" role="menuitem">Contact</a>
+    </div>
+  </nav>
+
+  <!-- PAGE -->
+  <div class="page">
+    <div class="container">
+
+      <!-- HOME / HERO -->
+      <section id="home" aria-label="Home section">
+        <div class="hero">
+          <div class="hero-left">
+            <div class="profile-wrap" title="Samantha">
+              <img src="4AFDF179-164A-45F3-A9FC-0101C4F2027B.jpeg" alt="Samantha profile picture">
+            </div>
+            <div class="name">Samantha</div>
+            <div class="tagline">Software Engineer in the making | AI & Cybersecurity Enthusiast</div>
+
+            <div class="cta-row" style="margin-top:14px;">
+              <button class="btn" onclick="scrollToId('projects')">View Projects</button>
+              <button class="btn ghost" onclick="downloadCV()">Download CV</button>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="bigline">Hi — I'm <span style="color:#fff">Samantha</span>,</div>
+            <div style="font-size:1.05rem; margin-top:6px;">
+              <span class="typing" id="typing"></span>
+            </div>
+            <p class="subtext">
+              Computer Science & Engineering student at BRAC University. Building a hybrid deep learning model for heart disease detection.
+              Balancing neural networks and makeup palettes — proving tech girls can do it all.
+            </p>
+            <div style="margin-top:14px; display:flex; gap:8px; align-items:center;">
+              <a class="btn" href="#contact">Let's collaborate</a>
+              <a class="btn ghost" href="https://www.linkedin.com/in/ramisha-hossain-samantha-01945b386" target="_blank">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider" style="margin-top:34px"></div>
+
+        <!-- quick mini stats (extra fluff lines to bulk) -->
+        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:16px;">
+          <div style="min-width:140px; padding:12px; border-radius:12px; border:1px solid rgba(255,0,127,0.04); background: rgba(255,0,127,0.02);">
+            <div style="color:var(--neon); font-weight:700;">3</div>
+            <div style="color:var(--muted); font-size:13px;">Live Projects</div>
+          </div>
+          <div style="min-width:140px; padding:12px; border-radius:12px; border:1px solid rgba(255,0,127,0.04); background: rgba(255,0,127,0.02);">
+            <div style="color:var(--neon); font-weight:700;">Thesis</div>
+            <div style="color:var(--muted); font-size:13px;">Deep learning for MRI</div>
+          </div>
+          <div style="min-width:140px; padding:12px; border-radius:12px; border:1px solid rgba(255,0,127,0.04); background: rgba(255,0,127,0.02);">
+            <div style="color:var(--neon); font-weight:700;">Cyber</div>
+            <div style="color:var(--muted); font-size:13px;">Ethical Hacking</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" aria-label="About me">
+        <h2>About Me</h2>
+        <div class="divider"></div>
+        <p style="color:var(--muted); max-width:900px; margin:14px auto; font-size:1rem; line-height:1.6;">
+          Hi there! I'm Samantha, a Computer Science & Engineering student at BRAC University with big dreams and even bigger ambitions.
+          By day, I'm on a mission to become the best software engineer out there (no pressure, right?). I'm currently working on my thesis developing a hybrid deep learning model to detect heart disease using MRI scans because saving lives with code is pretty cool.
+          <br><br>
+          I'm a full-time coder, AI enthusiast, and cybersecurity geek. But here's the plot twist: I can also contour like a pro. Yes, I train models and blend eyeshadow seamlessly.
+          <br><br>
+          Balancing neural networks and makeup palettes, proving tech girls can do it all. Building the future one line of code (and one bold lip) at a time. 💻💄
+        </p>
+
+        <!-- micro "fun facts" block to bulk up lines -->
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:20px;">
+          <div style="padding:10px 14px; border-radius:10px; border:1px solid rgba(255,0,127,0.06); background: rgba(255,0,127,0.01); color:var(--muted);">
+            Favorite stack: Python • TensorFlow • PyTorch
+          </div>
+          <div style="padding:10px 14px; border-radius:10px; border:1px solid rgba(255,0,127,0.06); background: rgba(255,0,127,0.01); color:var(--muted);">
+            Loves: Golden hour photography & espresso
+          </div>
+          <div style="padding:10px 14px; border-radius:10px; border:1px solid rgba(255,0,127,0.06); background: rgba(255,0,127,0.01); color:var(--muted);">
+            Motto: Build things that matter
+          </div>
+        </div>
+      </section>
+
+      <!-- SKILLS -->
+      <section id="skills" aria-label="Skills">
+        <h2>Skills</h2>
+        <div class="divider"></div>
+
+        <div class="skills-grid" style="margin-top:18px;">
+          <!-- Skill 1 -->
+          <div class="skill-card">
+            <div class="skill-icon">Py</div>
+            <div class="skill-body">
+              <h4>Python Programming</h4>
+              <p>Proficient in scripting, automation, and data pipelines.</p>
+              <div class="progress" aria-hidden="true"><i style="width:92%"></i></div>
+            </div>
+          </div>
+
+          <!-- Skill 2 -->
+          <div class="skill-card">
+            <div class="skill-icon">DL</div>
+            <div class="skill-body">
+              <h4>Deep Learning & Neural Networks</h4>
+              <p>Hands-on with TensorFlow, Keras, and PyTorch for research & projects.</p>
+              <div class="progress"><i style="width:86%"></i></div>
+            </div>
+          </div>
+
+          <!-- Skill 3 -->
+          <div class="skill-card">
+            <div class="skill-icon">Sec</div>
+            <div class="skill-body">
+              <h4>Cybersecurity & Ethical Hacking</h4>
+              <p>Basics to intermediate in pentesting, web security, and vulnerability scanning.</p>
+              <div class="progress"><i style="width:74%"></i></div>
+            </div>
+          </div>
+
+          <!-- Skill 4 -->
+          <div class="skill-card">
+            <div class="skill-icon">CV</div>
+            <div class="skill-body">
+              <h4>Machine Learning & Computer Vision</h4>
+              <p>Image preprocessing, model evaluation, and deployment pipelines.</p>
+              <div class="progress"><i style="width:82%"></i></div>
+            </div>
+          </div>
+
+          <!-- Skill 5 -->
+          <div class="skill-card">
+            <div class="skill-icon">Git</div>
+            <div class="skill-body">
+              <h4>Software Development & Git</h4>
+              <p>CI basics, branching strategies, collaborative workflows.</p>
+              <div class="progress"><i style="width:78%"></i></div>
+            </div>
+          </div>
+
+          <!-- Skill 6 -->
+          <div class="skill-card">
+            <div class="skill-icon">DSA</div>
+            <div class="skill-body">
+              <h4>Data Structures & Algorithms</h4>
+              <p>Strong foundations; problem-solving and competitive prepping.</p>
+              <div class="progress"><i style="width:70%"></i></div>
+            </div>
+          </div>
+
+          <!-- Skill 7 -->
+          <div class="skill-card">
+            <div class="skill-icon">DB</div>
+            <div class="skill-body">
+              <h4>SQL & Database Management</h4>
+              <p>Schema design, queries, and basic optimization techniques.</p>
+              <div class="progress"><i style="width:76%"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- little note -->
+        <p style="color:var(--muted); margin-top:18px; max-width:900px; margin-left:auto; margin-right:auto;">
+          These are the skills I use daily while working on research, projects, and app code. If you want a focused demo of any, hit me up — I love showing code.
+        </p>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects" aria-label="Projects">
+        <h2>Projects</h2>
+        <div class="divider"></div>
+
+        <div class="projects-grid">
+          <!-- Project: CashCatcher -->
+          <article class="project-card" aria-labelledby="p1">
+            <div id="p1" class="project-title">💰 CashCatcher</div>
+            <div class="project-desc">A budget tracker UI (frontend) that helps you monitor expenses and set monthly budgets. Built with HTML/CSS/JS and designed for mobile-first usage.</div>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div class="project-links">
+                <span class="tag">Frontend</span>
+                <span class="tag">Responsive</span>
+              </div>
+              <div>
+                <a class="link-btn" href="https://samanthahere.github.io/-CashCatcher/" target="_blank" rel="noopener">Open Demo</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project: Tic Tac Toe -->
+          <article class="project-card" aria-labelledby="p2">
+            <div id="p2" class="project-title">❌⭕ Tic Tac Toe</div>
+            <div class="project-desc">Classic two-player game with a neon UI and animation. Features name input, score tracking, and a small AI mode.</div>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div class="project-links">
+                <span class="tag">JS Game</span>
+                <span class="tag">UI/UX</span>
+              </div>
+              <a class="link-btn" href="https://samanthahere.github.io/tic-tac-toe/" target="_blank" rel="noopener">Play</a>
+            </div>
+          </article>
+
+          <!-- Project 3 placeholder (bulk lines & show future) -->
+          <article class="project-card" aria-labelledby="p3">
+            <div id="p3" class="project-title">🔬 Research — Heart MRI Detection (Thesis)</div>
+            <div class="project-desc">Developing a hybrid deep learning model to detect heart disease from MRI scans. Includes preprocessing pipeline, augmentation, and ensemble strategies.</div>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div class="project-links">
+                <span class="tag">Deep Learning</span>
+                <span class="tag">Computer Vision</span>
+              </div>
+              <a class="link-btn" href="#" onclick="alert('Thesis details coming soon — will add repo & paper links later!')">Coming Soon</a>
+            </div>
+          </article>
+        </div>
+
+        <!-- extra descriptive paragraph to expand file size and context -->
+        <p style="color:var(--muted); margin-top:18px;">
+          Each project above includes a live demo (if available). The CashCatcher & Tic Tac Toe demos are deployed to GitHub Pages — links are provided. I’ll add code walkthroughs and notebooks for the thesis repo soon.
+        </p>
+      </section>
+
+      <!-- EDUCATION & EXPERIENCE -->
+      <section id="education" aria-label="Education and Experience">
+        <h2>Education & Experience</h2>
+        <div class="divider"></div>
+
+        <div class="timeline">
+          <!-- BRAC -->
+          <div class="timeline-item">
+            <div class="timeline-bullet" aria-hidden="true"></div>
+            <div class="timeline-body">
+              <h4>BRAC University — B.Sc in CSE</h4>
+              <p>Currently enrolled. Coursework includes: Machine Learning, Computer Vision, Networks, DBMS, and Software Engineering.</p>
+              <p style="color:var(--muted); font-size:13px; margin-top:8px;">Ongoing — Thesis: Hybrid DL for heart disease detection (MRI).</p>
+            </div>
+          </div>
+
+          <!-- Viqarunnisa -->
+          <div class="timeline-item">
+            <div class="timeline-bullet" aria-hidden="true"></div>
+            <div class="timeline-body">
+              <h4>Viqarunnisa Noon School & College</h4>
+              <p>Higher Secondary and secondary education with focus on science & mathematics.</p>
+            </div>
+          </div>
+
+          <!-- Volunteer / Internship placeholder -->
+          <div class="timeline-item">
+            <div class="timeline-bullet" aria-hidden="true"></div>
+            <div class="timeline-body">
+              <h4>Volunteer / Intern</h4>
+              <p>Various part-time development & cybersecurity learning experiences — helped with small web projects, security workshops, and team collaborations.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- PHOTOGRAPHY -->
+      <section id="photography" aria-label="Photography">
+        <h2>Photography</h2>
+        <div class="divider"></div>
+
+        <p style="color:var(--muted); max-width:920px; margin:0 auto 12px auto;">
+          When I'm not debugging, I'm out here chasing golden hour and perfect angles. 🌸💕
+          — Below are some shots I captured. Click to enlarge.
+        </p>
+
+        <div class="gallery-grid">
+          <div class="photo-card" role="button" tabindex="0" onclick="openLightbox('797FFADC-F144-4A30-991A-6E3E09994C5F.jpeg')" onkeypress="if(event.key==='Enter') openLightbox('797FFADC-F144-4A30-991A-6E3E09994C5F.jpeg')">
+            <img src="797FFADC-F144-4A30-991A-6E3E09994C5F.jpeg" alt="Photography shot 1">
+            <div class="photo-caption">
+              <span>Golden Hour</span>
+              <span style="font-size:12px; color:var(--muted)">View</span>
+            </div>
+          </div>
+
+          <div class="photo-card" role="button" tabindex="0" onclick="openLightbox('EBC09D62-2381-4A96-BD04-D124BACA5897.jpeg')" onkeypress="if(event.key==='Enter') openLightbox('EBC09D62-2381-4A96-BD04-D124BACA5897.jpeg')">
+            <img src="EBC09D62-2381-4A96-BD04-D124BACA5897.jpeg" alt="Photography shot 2">
+            <div class="photo-caption">
+              <span>Perfect Angles</span>
+              <span style="font-size:12px;color:var(--muted)">View</span>
+            </div>
+          </div>
+
+          <!-- placeholders so gallery looks richer -->
+          <div class="photo-card" role="button" tabindex="0" onclick="alert('More photos coming — I will add them later')" onkeypress="if(event.key==='Enter') alert('More photos coming — I will add them later')">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><rect width='100%' height='100%' fill='%23000000'/><text x='50%' y='50%' fill='%23ff007f' font-size='22' font-family='Arial' text-anchor='middle'>Photo placeholder</text></svg>" alt="placeholder">
+            <div class="photo-caption">
+              <span>More soon</span>
+              <span style="font-size:12px;color:var(--muted)">Upload</span>
+            </div>
+          </div>
+
+          <div class="photo-card" role="button" tabindex="0" onclick="alert('More photos coming — I will add them later')" onkeypress="if(event.key==='Enter') alert('More photos coming — I will add them later')">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><rect width='100%' height='100%' fill='%23000000'/><text x='50%' y='50%' fill='%23ff007f' font-size='22' font-family='Arial' text-anchor='middle'>Photo placeholder</text></svg>" alt="placeholder">
+            <div class="photo-caption">
+              <span>More soon</span>
+              <span style="font-size:12px;color:var(--muted)">Upload</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" aria-label="Contact">
+        <h2>Contact</h2>
+        <div class="divider"></div>
+
+        <div class="contact-grid">
+          <div class="contact-card">
+            <p style="color:var(--muted); margin-bottom:8px;">
+              Email: <strong style="color:var(--neon)">ramishasamanthaa@gmail.com</strong>
+            </p>
+
+            <div class="copy-row">
+              <button class="btn" id="copyEmailBtn" onclick="copyEmail()">Copy Email</button>
+              <div class="small">Or click the email link below</div>
+            </div>
+
+            <div style="margin-top:12px;">
+              <a href="mailto:ramishasamanthaa@gmail.com" class="link-btn" style="padding:10px 12px; display:inline-block; border-radius:8px;">Send Email</a>
+            </div>
+
+            <div style="margin-top:12px; color:var(--muted)">
+              LinkedIn: <a href="https://www.linkedin.com/in/ramisha-hossain-samantha-01945b386" target="_blank" rel="noopener">ramisha-hossain-samantha</a>
+            </div>
+
+            <p style="color:var(--muted); margin-top:12px;">
+              Need me for a project or just want to chat about tech and AI? Hit me up — I promise I'm more responsive than your API calls. ⚡
+            </p>
+          </div>
+
+          <div class="contact-card" aria-hidden="false" style="display:flex; flex-direction:column; gap:8px;">
+            <label style="color:var(--muted); font-size:13px">Quick message (non functional demo)</label>
+            <input class="input" placeholder="Your name">
+            <input class="input" placeholder="Your email">
+            <textarea class="input" rows="5" placeholder="Message"></textarea>
+            <div style="display:flex; gap:8px;">
+              <button class="btn" onclick="alert('Demo only — replace with real backend or form handler')">Send (Demo)</button>
+              <button class="btn ghost" onclick="copyEmail()">Contact via Email</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer>
+        <div style="max-width:980px; margin:0 auto; padding:6px 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap">
+            <div style="color:var(--muted)">© 2025 Samantha. All Rights Reserved.</div>
+            <div style="color:var(--muted); font-size:13px">Made with ❤️ • Built using HTML, CSS & vanilla JS</div>
+          </div>
+        </div>
+      </footer>
+
+    </div> <!-- container -->
+  </div> <!-- page -->
+
+  <!-- BACK TO TOP -->
+  <button class="back-top" id="backTop" title="Back to top" onclick="scrollToTop()" aria-label="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="lightbox-close" onclick="closeLightbox()">Close</button>
+    <div class="lightbox-img" id="lightboxImgContainer">
+      <img id="lightboxImg" src="" alt="Enlarged photo" style="width:100%; display:block; border-radius:8px;">
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       JAVASCRIPT (typing effect, reveal on scroll, lightbox, back-to-top)
+       =================================================================== -->
+  <script>
+    /* -------------------------
+       Typing effect for tagline
+       ------------------------- */
+    (function typingEffect(){
+      const el = document.getElementById('typing');
+      const phrases = [
+        "Full-time coder. AI enthusiast. Cybersecurity geek.",
+        "Thesis: Hybrid deep learning for heart disease detection.",
+        "I train models and blend eyeshadow seamlessly."
+      ];
+      let pIndex=0, charIndex=0, forward=true;
+      let current = '';
+      function tick(){
+        const full = phrases[pIndex];
+        if(forward){
+          charIndex++;
+          current = full.slice(0,charIndex);
+          el.textContent = current;
+          if(charIndex === full.length){ forward = false; setTimeout(tick,1500); return; }
+        } else {
+          charIndex--;
+          current = full.slice(0,charIndex);
+          el.textContent = current;
+          if(charIndex === 0){ forward = true; pIndex = (pIndex+1)%phrases.length; setTimeout(tick,400); return; }
+        }
+        setTimeout(tick, 50 + Math.random()*40);
+      }
+      tick();
+    })();
+
+    /* -------------------------
+       Reveal sections on scroll
+       ------------------------- */
+    (function revealOnScroll(){
+      const sections = document.querySelectorAll('section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.12 });
+      sections.forEach(s => observer.observe(s));
+    })();
+
+    /* -------------------------
+       Scroll helpers
+       ------------------------- */
+    function scrollToId(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const yOffset = -68; // account for navbar
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
+    function scrollToTop(){
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    /* -------------------------
+       Back-to-top visibility
+       ------------------------- */
+    (function backTopVisibility(){
+      const btn = document.getElementById('backTop');
+      btn.style.display = 'none';
+      window.addEventListener('scroll', () => {
+        if(window.scrollY > 600) btn.style.display = 'grid';
+        else btn.style.display = 'none';
+      });
+    })();
+
+    /* -------------------------
+       Lightbox for photos
+       ------------------------- */
+    function openLightbox(src){
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox(){
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImg');
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden','true');
+      img.src = '';
+      document.body.style.overflow = '';
+    }
+    // close on Escape
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') closeLightbox();
+    });
+
+    /* -------------------------
+       Copy email to clipboard
+       ------------------------- */
+    function copyEmail(){
+      const email = 'ramishasamanthaa@gmail.com';
+      if(!navigator.clipboard){
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = email; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); alert('Email copied') } catch(e){ alert('Copy failed') }
+        document.body.removeChild(ta);
+        return;
+      }
+      navigator.clipboard.writeText(email).then(()=> {
+        const btn = document.getElementById('copyEmailBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(()=> btn.textContent = 'Copy Email', 1400);
+      }, ()=> alert('Copy failed'));
+    }
+
+    /* -------------------------
+       Download CV (demo)
+       ------------------------- */
+    function downloadCV(){
+      // Simple demo: dynamically create a small CV text file and trigger download.
+      const cvText = `
+Samantha — Computer Science & Engineering student
+Email: ramishasamanthaa@gmail.com
+LinkedIn: https://www.linkedin.com/in/ramisha-hossain-samantha-01945b386
+
+About:
+Hi there! I'm Samantha, a CSE student at BRAC University...
+(Full CV — replace with real CV.pdf in your repo to serve as a download file.)
+      `.trim();
+      const blob = new Blob([cvText], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'Samantha_CV.txt'; document.body.appendChild(a); a.click();
+      a.remove(); URL.revokeObjectURL(url);
+    }
+
+    /* -------------------------
+       Accessibility small helpers
+       ------------------------- */
+    (function keyboardNavFix(){
+      // Make nav links focus-visible friendly
+      const links = document.querySelectorAll('nav a');
+      links.forEach(l => l.addEventListener('focus', () => l.style.outline = '2px solid rgba(255,0,127,0.12)'));
+      links.forEach(l => l.addEventListener('blur', () => l.style.outline = 'none'));
+    })();
+
+    /* -------------------------
+       Extra: animate progress bars when skills section visible
+       ------------------------- */
+    (function animateProgress(){
+      const skillsSection = document.getElementById('skills');
+      const progressEls = document.querySelectorAll('.progress > i');
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            progressEls.forEach(el => {
+              // each already has inline width set in HTML (so they animate to that value)
+              el.style.width = el.style.width || '70%';
+            });
+            obs.disconnect();
+          }
+        });
+      }, {threshold:0.2});
+      if(skillsSection) obs.observe(skillsSection);
+    })();
+
+    /* -------------------------
+       Prevent focus outline on mouse click
+       ------------------------- */
+    (function needle(){
+      function handleMouseDown(){ document.body.classList.add('using-mouse') }
+      function handleKeyDown(e){ if(e.key === 'Tab') document.body.classList.remove('using-mouse') }
+      document.addEventListener('mousedown', handleMouseDown);
+      document.addEventListener('keydown', handleKeyDown);
+    })();
+
+    /* End of JS */
+  </script>
+</body>
+</html>
